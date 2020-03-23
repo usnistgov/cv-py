@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "cv-py"
+version = "0.1.0"
+description = ""
+authors = ["tbsexton <tbsexton@asu.edu>"]
+
+[tool.poetry.dependencies]
+python = "^3.6.1"
+pandas = "^1.0.3"
+tqdm = "^4.43.0"
+scikit-learn = "^0.22.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^4.6"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
