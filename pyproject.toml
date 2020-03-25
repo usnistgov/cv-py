@@ -3,6 +3,10 @@ name = "cv-py"
 version = "0.1.0"
 description = ""
 authors = ["tbsexton <tbsexton@asu.edu>"]
+packages = [
+    { include = "cv" },
+#    { include = "extra_package/**/*.py" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.6.1"

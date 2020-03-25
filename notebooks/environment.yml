@@ -1,0 +1,11 @@
+name: cv-py
+
+dependencies:
+  - numpy
+  - toolz
+  - matplotlib
+  - seaborn
+  - ipykernel
+  - pip
+  - pip:
+    - ../dist/cv-py-0.1.0.tar.gz
