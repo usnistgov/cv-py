@@ -61,7 +61,7 @@ def download():
     _download_data(args.datapackage)  #TODO check if already installed
 
 
-def load(datapackage='cord19-cdcs-nist', format='parquet'):
+def load(datapackage='cord19_cdcs', format='parquet'):
 
     def is_package(name):
         """Check if string maps to a package installed via pip.
@@ -87,7 +87,7 @@ def load(datapackage='cord19-cdcs-nist', format='parquet'):
         return Path(pkg.__file__).parent
 
     assert is_package(datapackage), "Data Package must first be installed!"
-    path_to_data = get_package_path(datapackage)/datapackage+'.' + format
+    path_to_data = get_package_path(datapackage)/(datapackage+'.' + format)
 
     import dask.dataframe as dd
 
