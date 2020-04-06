@@ -1,10 +1,10 @@
 # cv-py
-This ripository provides the Covid-19 Research Challenge Dataset as an installable data-package, similar to the way trained NLP/ML models are tracked/distributed in the various corresponding libraries (SpaCy, gensim, flair, nltk, etc). This is intended to provide smooth access to the collection of publications for researchers and analysts, along with validated tools for preliminary preprocessing and interface to various formats. 
+This repository provides the COVID-19 Research Challenge Dataset as an installable data-package, similar to the way trained NLP/ML models are tracked/distributed in the various corresponding libraries (SpaCy, gensim, flair, nltk, etc.). This is intended to provide smooth access to the collection of publications for researchers and analysts, along with validated tools for preliminary preprocessing and interface to various formats. 
 
 Data archival is achieved through the [cached archives](https://github.com/usnistgov/cord19-cdcs-nist) of a NIST-curated CORD19 instance, powered by the [Configurable Data Curation System](https://www.nist.gov/itl/ssd/information-systems-group/configurable-data-curation-system-cdcs/about-cdcs) (CDCS). If you are looking for a more DIY access to data in its raw form, head over to that releases page and download desired XML, JSON, or CSV data types. 
 
 ## Getting Started
-This package is meant to assist analysts in accessing and processing covid-19 publication data as quickly as possible. Please keep in mind that it is a work-in-progress, as the data situation evolves rapidly, the codebase and subsequent user interface likely will as well. 
+This package is meant to assist analysts in accessing and processing COVID-19 publication data as quickly as possible. Please keep in mind that it is a work-in-progress, as the data situation evolves rapidly, the codebase and subsequent user interface likely will as well. 
 
 ### Installation
 For now, this repository is installable via `pip` directly from its github location: 
@@ -43,7 +43,7 @@ This is done with the express purpose of _contextualization_ within the problem 
 - NER annotation and processing tools (spacy, scibert) -- `annotate`  (WIP)
 
 ### State-of-the-art VSM NLP -- `cv.embed` (WIP)
-- Bag of Words ans Topic Modeling (spacy/textacy) -- `bow`
+- Bag of Words and Topic Modeling (spacy/textacy) -- `bow`
 - Word and Character-level embeddings (flair) -- `vsm` 
 
 ### Visualization and EDA -- `cv.viz` (WIP)
