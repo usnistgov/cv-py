@@ -8,4 +8,4 @@ dependencies:
   - ipykernel
   - pip
   - pip:
-    - ../dist/cv-py-0.1.0.tar.gz
+    - git+https://github.com/usnistgov/cv-py.git
