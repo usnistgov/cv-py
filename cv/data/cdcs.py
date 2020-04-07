@@ -13,11 +13,12 @@ import importlib
 import pkg_resources
 
 
-__all__ = ['load']
+__all__ = ["load"]
 
 alias = {
-    'cord19-cdcs-nist':
-        '/download/v{0}/cord19-cdcs-{0}.tar.gz'.format(about.__compatible__)
+    "cord19-cdcs-nist": "/download/v{0}/cord19-cdcs-{0}.tar.gz".format(
+        about.__compatible__
+    )
 }
 
 semver_regex = re.compile(  # Official
@@ -33,13 +34,13 @@ def get_filename(argument):
     if not fname:
         try:
             ver = semver_regex.search(argument).group(0)
-            fname = '/download/v{0}/cord19-cdcs-{0}.tar.gz'.format(ver)
-        except AttributeError: raise
+            fname = "/download/v{0}/cord19-cdcs-{0}.tar.gz".format(ver)
+        except AttributeError:
+            raise
     return fname
 
 
 def download():
-
     def _download_data(argument, user_pip_args=None):
         download_url = about.__download_url__ + get_filename(argument)
         print(download_url)
@@ -52,17 +53,19 @@ def download():
     parser = argparse.ArgumentParser(
         description="Helper to install CORD19 Datapackage locally for use by cv-py"
     )
-    parser.add_argument("--datapackage", '-d',
-                        default='cord19-cdcs-nist',
-                        type=str,
-                        help="Which data package to load?")
+    parser.add_argument(
+        "--datapackage",
+        "-d",
+        default="cord19-cdcs-nist",
+        type=str,
+        help="Which data package to load?",
+    )
     args = parser.parse_args()
 
-    _download_data(args.datapackage)  #TODO check if already installed
+    _download_data(args.datapackage)  # TODO check if already installed
 
 
-def load(datapackage='cord19_cdcs', format='parquet'):
-
+def load(datapackage="cord19_cdcs", format="parquet"):
     def is_package(name):
         """Check if string maps to a package installed via pip.
         name (unicode): Name of package.
@@ -87,12 +90,11 @@ def load(datapackage='cord19_cdcs', format='parquet'):
         return Path(pkg.__file__).parent
 
     assert is_package(datapackage), "Data Package must first be installed!"
-    path_to_data = get_package_path(datapackage)/(datapackage+'.' + format)
+    path_to_data = get_package_path(datapackage) / (datapackage + "." + format)
 
     import dask.dataframe as dd
 
-    return dd.read_parquet(path_to_data)  #TODO wrapper class!
+    return dd.read_parquet(path_to_data)  # TODO wrapper class!
+
 
 # pkg_resources.resource_filename('cord19_cdcs', 'cord19_cdcs.parquet')
-
-
