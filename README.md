@@ -42,7 +42,7 @@ This is done with the express purpose of _contextualization_ within the problem 
 - tools to reproduce/alter text preprocessing workflows -- `clean`  (WIP)
 - NER annotation and processing tools (spacy, scibert) -- `annotate`  (WIP)
 
-### State-of-the-art VSM NLP -- `cv.embed` (WIP)
+### State-of-the-art VSM NLP -- `cv.embed` (WIP)s
 - Bag of Words and Topic Modeling (spacy/textacy) -- `bow`
 - Word and Character-level embeddings (flair) -- `vsm` 
 
@@ -50,4 +50,8 @@ This is done with the express purpose of _contextualization_ within the problem 
 - topic model exploration (termite) -- `termite`
 - Dimensionality reduction and clustering (umap, hdbscan) -- `drc`
 
-...more?
+
+## Development/Contribution Guidelines
+More to come, but primary requirement is the use of [Poetry](https://python-poetry.org/). 
+
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
