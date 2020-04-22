@@ -11,7 +11,7 @@ For now, this repository is installable via `pip` directly from its github locat
 
 `pip install cv-py`
 
-This will provide access to `cv-py` modules via the `cv` namespace, and includes `dask` and `scikit-learn` by default. `cv-py` is built to provide smooth access to *existing tools*, as needed for analysis. Consequently, dependencies to use the various tools supported are split into groups for convenience, accessed with brackets as `pip install cv-py[extras]`:
+This will provide access to `cv-py` modules via the `cv_py` namespace, and includes `dask` and `scikit-learn` by default. `cv-py` is built to provide smooth access to *existing tools*, as needed for analysis. Consequently, dependencies to use the various tools supported are split into groups for convenience, accessed with brackets as `pip install cv-py[extras]`:
 
  extras alias   |   dependencies
  ---            |   ---
