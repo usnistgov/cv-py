@@ -1,0 +1,11 @@
+name: cv-py
+
+dependencies:
+  - numpy
+  - toolz
+  - matplotlib
+  - seaborn
+  - ipykernel
+  - pip
+  - pip:
+    - git+https://github.com/usnistgov/cv-py.git
