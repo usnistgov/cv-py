@@ -5,7 +5,7 @@ import requests
 import os
 import subprocess
 import sys
-from cv import __compatible__
+from cv import __compatible__,  __download_url__
 import argparse
 import re
 from pathlib import Path
@@ -15,11 +15,7 @@ import pkg_resources
 
 __all__ = ["load"]
 
-alias = {
-    "cord19_cdcs": "/download/v{0}/cord19-cdcs-{0}.tar.gz".format(
-        __compatible__
-    )
-}
+alias = {"cord19_cdcs": "/download/v{0}/cord19-cdcs-{0}.tar.gz".format(__compatible__)}
 
 semver_regex = re.compile(  # Official
     r"(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)"
@@ -67,7 +63,7 @@ def get_package_path(name):
 
 def download():
     def _download_data(argument, user_pip_args=None):
-        download_url = about.__download_url__ + get_filename(argument)
+        download_url = __download_url__ + get_filename(argument)
         print(download_url)
         pip_args = ["--no-cache-dir"]
         if user_pip_args:
@@ -79,7 +75,8 @@ def download():
         description="Helper to install CORD19 Datapackage locally for use by cv-py"
     )
     parser.add_argument(
-        "--resource", "-r",
+        "--resource",
+        "-r",
         default="cord19_cdcs",
         type=str,
         help="Which resource to install?",
@@ -87,17 +84,24 @@ def download():
     parser.add_argument(
         "--pip-arg",
         "-p",
-        action='append',
+        action="append",
         help="Argument to pass to pip (in addition to `--no-cache-dir`)",
     )
-    parser.add_argument("--overwrite", dest='overwrite', action="store_true",
-                        help="whether to reinstall existing resource, if found")
+    parser.add_argument(
+        "--overwrite",
+        dest="overwrite",
+        action="store_true",
+        help="whether to reinstall existing resource, if found",
+    )
     parser.set_defaults(overwrite=False)
     args = parser.parse_args()
-    assert (args.overwrite and not is_package(args.resource),
-            "Package already installed! To reinstall, pass `--overwrite`.")
+    assert (
+        args.overwrite and not is_package(args.resource),
+        "Package already installed! To reinstall, pass `--overwrite`.",
+    )
 
     _download_data(args.resource, user_pip_args=args.pip_args)
+
 
 def load(datapackage="cord19_cdcs", format="parquet"):
 
