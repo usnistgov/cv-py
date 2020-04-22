@@ -12,7 +12,6 @@ pyarrow = "^0.16.0"
 dask = {extras = ["complete"], version = "^2.13.0"}
 scikit-learn = "^0.22.2"
 
-
 # A list of optional dependencies, choosable by module
 ## Spacy ecosystem
 textacy = { version = "^0.10.0", optional = true}
@@ -28,9 +27,9 @@ seaborn = {version = "^0.10.0", optional = true}
 
 
 [tool.poetry.extras]
-spacy = ["textacy scispacy"]
+spacy = ["textacy", "scispacy"]
 flair = ["flair"]
-viz = ["holoviews seaborn"]
+viz = ["holoviews", "seaborn"]
 
 
 [tool.poetry.scripts]
