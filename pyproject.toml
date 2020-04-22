@@ -55,6 +55,7 @@ enable = true
 vcs = "git"
 
 [tool.poetry-dynamic-versioning.substitution]
+files = ["*.py", "*/__init__.py", "*/__version__.py"]
 
 [build-system]
 requires = ["poetry>=0.12"]

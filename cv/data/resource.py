@@ -5,7 +5,7 @@ import requests
 import os
 import subprocess
 import sys
-from .. import about
+from cv import __compatible__
 import argparse
 import re
 from pathlib import Path
@@ -17,7 +17,7 @@ __all__ = ["load"]
 
 alias = {
     "cord19_cdcs": "/download/v{0}/cord19-cdcs-{0}.tar.gz".format(
-        about.__compatible__
+        __compatible__
     )
 }
 
