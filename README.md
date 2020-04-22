@@ -28,7 +28,7 @@ In addition to installing `cv-py`, installation will provide a `cv-download` com
 After downloading, the data can be loaded directly: 
 
 ```python
-from cv.data import resource
+from cv_py.data import resource
 df = resource.load("cord19_cdcs")
 ```
 

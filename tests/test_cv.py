@@ -1,4 +1,4 @@
-from cv import __version__
+from cv_py import __version__
 
 
 def test_version():

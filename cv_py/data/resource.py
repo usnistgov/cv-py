@@ -5,7 +5,7 @@ import requests
 import os
 import subprocess
 import sys
-from cv import __compatible__,  __download_url__
+from cv_py import __compatible__,  __download_url__
 import argparse
 import re
 from pathlib import Path
