@@ -19,8 +19,8 @@ In addition to installing `cv-py`, installation will provide a `cv-download` com
 After downloading, the data can be loaded directly: 
 
 ```python
-from cv.data import cdcs
-df = cdcs.load()
+from cv.data import resource
+df = resource.load()
 ```
 
 The `load()` function returns an out-of-memory Dask Datafame, ensuring scalability on a wide range of devices. Most Pandas functions are available, and the underlying `pandas.DataFrame` object is exposed upon executing the `.compute()` method. See [Dask Documentation](https://docs.dask.org/en/latest/dataframe.html) for more details. More data interfaces are to come!
