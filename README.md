@@ -9,10 +9,19 @@ This package is meant to assist analysts in accessing and processing COVID-19 pu
 ### Installation
 For now, this repository is installable via `pip` directly from its github location: 
 
-`pip install git+https://github.com/usnistgov/cv-py.git`
+`pip install cv-py`
 
-This will provide access to `cv-py` modules via the `cv` namespace. 
+This will provide access to `cv-py` modules via the `cv` namespace, and includes `dask` and `scikit-learn` by default. `cv-py` is built to provide smooth access to *existing tools*, as needed for analysis. Consequently, dependencies to use the various tools supported are split into groups for convenience, accessed with brackets as `pip install cv-py[extras]`:
 
+ extras alias   |   dependencies
+ ---            |   ---
+ spacy          |   `spacy`, `textacy`, `scispacy`
+ flair          |   `flair`, `syntok`
+ viz            |   `seaborn`, `holoviews[recommended]`
+ 
+These can be combined, e.g. `pip install cv-py[flair,viz]`.
+
+ 
 ### Usage
 In addition to installing `cv-py`, installation will provide a `cv-download` command to be used in a terminal (in the same environment `cv-py` was installed). The default options will automatically install the latest compatible version of the curated CORD19 dataset. Use the `-h` flag for more information. 
 
@@ -20,7 +29,7 @@ After downloading, the data can be loaded directly:
 
 ```python
 from cv.data import resource
-df = resource.load()
+df = resource.load("cord19_cdcs")
 ```
 
 The `load()` function returns an out-of-memory Dask Datafame, ensuring scalability on a wide range of devices. Most Pandas functions are available, and the underlying `pandas.DataFrame` object is exposed upon executing the `.compute()` method. See [Dask Documentation](https://docs.dask.org/en/latest/dataframe.html) for more details. More data interfaces are to come!
