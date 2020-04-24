@@ -33,7 +33,7 @@ viz = ["holoviews", "seaborn"]
 
 
 [tool.poetry.scripts]
-cv-download = 'cv.data.resource:download'
+cv-download = 'cv_py.data.resource:download'
 
 [tool.poetry.dev-dependencies]
 pytest = ">=4.6"
