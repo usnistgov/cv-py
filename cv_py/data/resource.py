@@ -77,7 +77,6 @@ def download():
     parser.add_argument(
         "--resource",
         "-r",
-        default="cord19_cdcs",
         type=str,
         help="Which resource to install?",
     )
@@ -93,14 +92,18 @@ def download():
         action="store_true",
         help="whether to reinstall existing resource, if found",
     )
-    parser.set_defaults(overwrite=False)
+    parser.set_defaults(
+        resource="cord19_cdcs",
+        overwrite=False,
+        pip_arg=None,
+    )
     args = parser.parse_args()
     assert (
         args.overwrite and not is_package(args.resource),
         "Package already installed! To reinstall, pass `--overwrite`.",
     )
 
-    _download_data(args.resource, user_pip_args=args.pip_args)
+    _download_data(args.resource, user_pip_args=args.pip_arg)
 
 
 def load(datapackage="cord19_cdcs", format="parquet"):
