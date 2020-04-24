@@ -98,10 +98,8 @@ def download():
         pip_arg=None,
     )
     args = parser.parse_args()
-    assert (
-        args.overwrite and not is_package(args.resource),
-        "Package already installed! To reinstall, pass `--overwrite`.",
-    )
+    assert args.overwrite or not is_package(args.resource), (
+        "Package already installed! To reinstall, pass `--overwrite`.")
 
     _download_data(args.resource, user_pip_args=args.pip_arg)
 
