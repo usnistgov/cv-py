@@ -11,6 +11,7 @@ import re
 from pathlib import Path
 import importlib
 import pkg_resources
+import dask.dataframe as dd
 
 
 __all__ = ["load"]
@@ -109,9 +110,8 @@ def load(datapackage="cord19_cdcs", format="parquet"):
     assert is_package(datapackage), "Data Package must first be installed!"
     path_to_data = get_package_path(datapackage) / (datapackage + "." + format)
 
-    import dask.dataframe as dd
 
-    return dd.read_parquet(path_to_data)  # TODO wrapper class!
+    return dd.read_parquet(path_to_data, engine='pyarrow')  # TODO wrapper class!
 
 
 # pkg_resources.resource_filename('cord19_cdcs', 'cord19_cdcs.parquet')
