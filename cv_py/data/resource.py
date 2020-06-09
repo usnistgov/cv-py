@@ -5,18 +5,19 @@ import requests
 import os
 import subprocess
 import sys
-from cv_py import __compatible__,  __download_url__
+from cv_py import __compatible__
 import argparse
 import re
 from pathlib import Path
 import importlib
 import pkg_resources
 import dask.dataframe as dd
+import requests
+import semantic_version as sv
 
 
 __all__ = ["load"]
 
-alias = {"cord19_cdcs": "/download/v{0}/cord19-cdcs-{0}.tar.gz".format(__compatible__)}
 
 semver_regex = re.compile(  # Official
     r"(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)"
@@ -26,15 +27,27 @@ semver_regex = re.compile(  # Official
 )
 
 
-def get_filename(argument):
-    fname = alias.get(argument)
-    if not fname:
-        try:
-            ver = semver_regex.search(argument).group(0)
-            fname = "/download/v{0}/cord19-cdcs-{0}.tar.gz".format(ver)
-        except AttributeError:
-            raise
-    return fname
+def get_release_versions(proj_url):
+    r = requests.get(proj_url + "tags").json()
+    versions = [sv.Version(i["name"][1:]) for i in r if sv.validate(i["name"][1:])]
+    return versions
+
+
+def get_filename(datapackage="cord19_cdcs"):
+    """get endpoint to download `datapackage`"""
+    constraint = __compatible__.get(datapackage)
+    assert (
+        constraint is not None
+    ), f"`{datapackage}` is not a supported datapackage name!"
+    spec = sv.SimpleSpec(constraint)
+
+    if datapackage == "cord19_cdcs":
+        dl_root = "https://github.com/usnistgov/cord19-cdcs-nist/"
+        best_compatible = spec.select(get_release_versions(dl_root))
+        fname = "download/v{0}/cord19-cdcs-{0}.tar.gz".format(best_compatible)
+        return dl_root + fname
+    else:  # TODO other data sources?
+        raise NotImplementedError
 
 
 def is_package(name):
@@ -62,24 +75,23 @@ def get_package_path(name):
     return Path(pkg.__file__).parent
 
 
-def download():
-    def _download_data(argument, user_pip_args=None):
-        download_url = __download_url__ + get_filename(argument)
-        print(download_url)
-        pip_args = ["--no-cache-dir"]
-        if user_pip_args:
-            pip_args.extend(user_pip_args)
-        cmd = [sys.executable, "-m", "pip", "install"] + pip_args + [download_url]
-        return subprocess.call(cmd, env=os.environ.copy())
+def download_datapackage(datapackage, user_pip_args=None):
+    download_url = get_filename(datapackage=datapackage)
+    print(download_url)
+    pip_args = ["--no-cache-dir"]
+    if user_pip_args:
+        pip_args.extend(user_pip_args)
+    cmd = [sys.executable, "-m", "pip", "install"] + pip_args + [download_url]
+    return subprocess.call(cmd, env=os.environ.copy())
+
+
+def download_cli():
 
     parser = argparse.ArgumentParser(
         description="Helper to install CORD19 Datapackage locally for use by cv-py"
     )
     parser.add_argument(
-        "--resource",
-        "-r",
-        type=str,
-        help="Which resource to install?",
+        "--resource", "-r", type=str, help="Which resource to install?",
     )
     parser.add_argument(
         "--pip-arg",
@@ -94,24 +106,25 @@ def download():
         help="whether to reinstall existing resource, if found",
     )
     parser.set_defaults(
-        resource="cord19_cdcs",
-        overwrite=False,
-        pip_arg=None,
+        resource="cord19_cdcs", overwrite=False, pip_arg=None,
     )
     args = parser.parse_args()
-    assert args.overwrite or not is_package(args.resource), (
-        "Package already installed! To reinstall, pass `--overwrite`.")
+    assert args.overwrite or not is_package(
+        args.resource
+    ), "Package already installed! To reinstall, pass `--overwrite`."
 
-    _download_data(args.resource, user_pip_args=args.pip_arg)
+    download_datapackage(args.resource, user_pip_args=args.pip_arg)
 
 
-def load(datapackage="cord19_cdcs", format="parquet"):
-
+def load(datapackage="cord19_cdcs", fmt="parquet"):
+    """Return a python container (e.g. Dataframe) stored in `datapackage`.
+    """
     assert is_package(datapackage), "Data Package must first be installed!"
-    path_to_data = get_package_path(datapackage) / (datapackage + "." + format)
+    path_to_data = get_package_path(datapackage) / (datapackage + "." + fmt)
 
-
-    return dd.read_parquet(path_to_data, engine='pyarrow')  # TODO wrapper class!
+    return dd.read_parquet(
+        path_to_data, engine="pyarrow"
+    )  # TODO wrapper class or pattern match!
 
 
 # pkg_resources.resource_filename('cord19_cdcs', 'cord19_cdcs.parquet')
