@@ -27,8 +27,8 @@ semver_regex = re.compile(  # Official
 )
 
 
-def get_release_versions(proj_url):
-    r = requests.get(proj_url + "tags").json()
+def get_release_versions(proj_str):
+    r = requests.get(f"https://api.github.com/repos/{proj_str}/tags").json()
     versions = [sv.Version(i["name"][1:]) for i in r if sv.validate(i["name"][1:])]
     return versions
 
@@ -42,10 +42,12 @@ def get_filename(datapackage="cord19_cdcs"):
     spec = sv.SimpleSpec(constraint)
 
     if datapackage == "cord19_cdcs":
-        dl_root = "https://github.com/usnistgov/cord19-cdcs-nist/"
-        best_compatible = spec.select(get_release_versions(dl_root))
-        fname = "download/v{0}/cord19-cdcs-{0}.tar.gz".format(best_compatible)
-        return dl_root + fname
+        repo = "usnistgov/cord19-cdcs-nist"
+        v = spec.select(get_release_versions(repo))
+        fname = (
+            f"https://github.com/{repo}/releases/download/v{v}/cord19-cdcs-{v}.tar.gz"
+        )
+        return fname
     else:  # TODO other data sources?
         raise NotImplementedError
 
