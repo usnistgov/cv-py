@@ -40,7 +40,7 @@ def get_filename(datapackage="cord19_cdcs"):
             f"https://github.com/{repo}/releases/download/v{v}/cord19-cdcs-{v}.tar.gz"
         )
         return fname
-    else:  # TODO other data sources?
+    else:  # TODO other resources sources?
         raise NotImplementedError
 
 
