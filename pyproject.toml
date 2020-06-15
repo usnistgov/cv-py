@@ -45,7 +45,7 @@ poetry-dynamic-versioning = "^0.6.0"
 coconut = "^1.4.3"
 
 [tool.taskipy.tasks]
-format = "black cv/"
+format = "black cv_py/"
 
 [tool.poetry-dynamic-versioning]
 enable = true

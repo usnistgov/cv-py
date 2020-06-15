@@ -19,14 +19,6 @@ import semantic_version as sv
 __all__ = ["load"]
 
 
-semver_regex = re.compile(  # Official
-    r"(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)"
-    r"(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)"
-    r"(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))"
-    r"?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?"
-)
-
-
 def get_release_versions(proj_str):
     r = requests.get(f"https://api.github.com/repos/{proj_str}/tags").json()
     versions = [sv.Version(i["name"][1:]) for i in r if sv.validate(i["name"][1:])]
@@ -80,7 +72,7 @@ def get_package_path(name):
 def download_datapackage(datapackage, user_pip_args=None):
     download_url = get_filename(datapackage=datapackage)
     print(download_url)
-    pip_args = ["--no-cache-dir"]
+    pip_args = ["--no-cache-dir", "--upgrade"]
     if user_pip_args:
         pip_args.extend(user_pip_args)
     cmd = [sys.executable, "-m", "pip", "install"] + pip_args + [download_url]
