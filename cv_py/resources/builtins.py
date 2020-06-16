@@ -4,15 +4,21 @@ from dataclasses import dataclass
 from dacite import from_dict
 from pathlib import Path
 
+
 @dataclass
 class CordTask:
     question: str
     details: str
     subtasks: List[Union[str, List[str]]]
 
+
 @dataclass
 class CordTasks:
+    # TODO convenience functions for bulk processing text
     tasklist: List[CordTask]
+
+    def __getitem__(self, item):
+        return self.tasklist[item]
 
 
 def cord19tasks(type_hooks: Optional[Dict] = None) -> CordTasks:
@@ -35,7 +41,7 @@ def cord19tasks(type_hooks: Optional[Dict] = None) -> CordTasks:
     -------
     CordTasks, a dataclass containing structured text of the CORD19 tasks.
     """
-    yml_loc = Path(__file__).parent/"cord-tasks.yml"
+    yml_loc = Path(__file__).parent / "cord-tasks.yml"
     with yml_loc.open() as fp:
         task_dict = yaml.safe_load(fp)
     return from_dict(data_class=CordTasks, data=task_dict)
