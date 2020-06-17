@@ -14,8 +14,7 @@ jupyter:
 ---
 
 ```python
-client
-
+from pprint import pprint
 ```
 
 <!-- #region slideshow={"slide_type": "slide"} -->

@@ -41,7 +41,7 @@ def _check_dependencies(dep):
 
 @_check_dependencies("spacy")
 def spacy_dask_context(model: str):
-    """
+    """ **NOT CURRENTLY SUPPORTED**
     decorator factory that prepares a `spacy.Doc`-processing function for
     use on, e.g., a dask container `map` over strings (the text).
 

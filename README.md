@@ -1,22 +1,54 @@
 # cv-py
-This repository provides the COVID-19 Research Challenge Dataset as an installable data-package, similar to the way trained NLP/ML models are tracked/distributed in the various corresponding libraries (SpaCy, gensim, flair, nltk, etc.). This is intended to provide smooth access to the collection of publications for researchers and analysts, along with validated tools for preliminary preprocessing and interface to various formats. 
+This repository provides a low-friction interface to the COVID-19 Research Challenge Dataset (CORD19) through an installable data-package, similar to the way trained NLP/ML models are tracked/distributed in the various corresponding libraries (SpaCy, gensim, flair, nltk, etc.). This is intended to provide smooth access to the collection of publications for researchers and analysts, along with validated tools for preliminary preprocessing and interface to various formats. 
 
-Data archival is achieved through the [cached archives](https://github.com/usnistgov/cord19-cdcs-nist) of a NIST-curated CORD19 instance, powered by the [Configurable Data Curation System](https://www.nist.gov/itl/ssd/information-systems-group/configurable-data-curation-system-cdcs/about-cdcs) (CDCS). If you are looking for a more DIY access to data in its raw form, head over to that releases page and download desired XML, JSON, or CSV data types. 
+
 
 ## Getting Started
 This package is meant to assist analysts in accessing and processing COVID-19 publication data as quickly as possible. Please keep in mind that it is a work-in-progress, as the data situation evolves rapidly, the codebase and subsequent user interface likely will as well. 
+
+### Demo
+Roughly, features are split into *resources* (data and models to use in your analyes) and *tools* (things to help in getting data into models, into analysis). 
+
+Some of the already supported features:
+
+#### Tasks-as-data
+Structured access to CORD19 challenge tasks as typed dataclasses:
+```python
+from cv_py.resources.builtins import cord19tasks
+cord19tasks()[-2].question
+>>> 'What do we know about COVID-19 risk factors?'
+```
+#### Public API helper-functions
+Make use of powerful state-of-the-art Neural question answering, to search for relevant CORD19 passages with a single query to Korea University's [*covidAsk*]() model:
+```python
+from cv_py.tools.remote import covid_ask
+ans = covid_ask(cord19tasks()[-2].question)
+ans['ret'][0]['answer']
+>>> 'patients with cancer had a higher risk of COVID-19'
+```
+#### Scalable, Fast, *Versioned* access to Data
+Backed by the NIST-curated [COVID-19 Data Repository](https://covid19-data.nist.gov/), and versioned to ensure your pipelines don't break as the data changes:
+
+ ```python
+from cv_py.resources.datapackage import load
+df = load("cord19_cdcs")
+
+```
+It's backed by Dask, using read-optimized Apache Parquet storage format. Need to get back to a more familiar `pandas` framework? Each parallel, lazy partition is itself a DataFrame, only a `.compute()` away. 
+
+Data archival is achieved through the [cached archives](https://github.com/usnistgov/cord19-cdcs-nist) of the CDCS instance. If you are looking for a more DIY access to data in its raw form, head over to that releases page and download desired raw XML, JSON, or CSV data types. 
 
 ### Installation
 For now, this repository is installable via `pip` directly from its github location: 
 
 `pip install cv-py`
 
-This will provide access to `cv-py` modules via the `cv_py` namespace, and includes `dask` and `scikit-learn` by default. `cv-py` is built to provide smooth access to *existing tools*, as needed for analysis. Consequently, dependencies to use the various tools supported are split into groups for convenience, accessed with brackets as `pip install cv-py[extras]`:
+This will provide access to `cv-py` modules via the `cv_py` namespace, and includes `dask` and `scikit-learn` by default. `cv-py` is built to provide smooth access to *existing tools*, as needed for analysis. Consequently, dependencies to use the various tools supported are split into groups for convenience, installed with brackets as `pip install cv-py[extras]`:
 
  extras alias   |   dependencies
  ---            |   ---
- spacy          |   `spacy`, `textacy`, `scispacy`
- flair          |   `flair`, `syntok`
+ spacy          |   [`spacy`](https://spacy.io/usage), [`textacy`](https://github.com/chartbeat-labs/textacy), [`scispacy`](https://github.com/allenai/scispacy)
+ flair          |   `flair`
  viz            |   `seaborn`, `holoviews[recommended]`
  
 These can be combined, e.g. `pip install cv-py[flair,viz]`.
@@ -46,21 +78,28 @@ This is done with the express purpose of _contextualization_ within the problem 
 
 ## Features (available and planned)
 
-### Pre-processed data -- `cv.data`
-- data "products" as packages -- `cdcs`
-- tools to reproduce/alter text preprocessing workflows -- `clean`  (WIP)
-- NER annotation and processing tools (spacy, scibert) -- `annotate`  (WIP)
+- `resources`: *data and models*
+    - `builtins`:
+        *lightweight data/models contained natively*
+        - Tasks: *from Kaggle*
+        - TREC topics (?)
+    - `datapackage`:
+        *installable with `cv-download`*
+        - CORD19: *papers and NER tags from NIST CDCS*
+        - Sci-spaCy [models](https://allenai.github.io/scispacy/): *see their documentation for usage* 
+- `tools` : *to assist in moving CORD19 data around*
+    - `process`: *to spacy, flair, etc.* (WIP)
+        - parallelism and scale (pandas -> dask)
+        - ease of use: built-in pipeline tools
+    - `remote`: *external tools, accessible via API*
+        - Univ. S. Korea Neural NER APIs (CovidAsk, BERN(?))
+        - TextAE pubannotation vizualizer (WIP)
 
-### State-of-the-art VSM NLP -- `cv.embed` (WIP)s
-- Bag of Words and Topic Modeling (spacy/textacy) -- `bow`
-- Word and Character-level embeddings (flair) -- `vsm` 
-
-### Visualization and EDA -- `cv.viz` (WIP)
-- topic model exploration (termite) -- `termite`
-- Dimensionality reduction and clustering (umap, hdbscan) -- `drc`
 
 
 ## Development/Contribution Guidelines
 More to come, but primary requirement is the use of [Poetry](https://python-poetry.org/). 
+
+Notebooks are kept nicely git-ified thanks to [Jupytext](https://github.com/mwouts/jupytext)
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
