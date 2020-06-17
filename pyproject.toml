@@ -31,11 +31,12 @@ flair = { version = "^0.4.5", optional = true}
 ## Viz tools
 holoviews = {extras = ["recommended"], version = "^1.13.2", optional = true}
 seaborn = {version = "^0.10.0", optional = true}
+panel = {version = "^0.9.5", optional = true}
 
 [tool.poetry.extras]
 spacy = ["textacy", "scispacy"]
 flair = ["flair"]
-viz = ["holoviews", "seaborn"]
+viz = ["holoviews", "panel", "seaborn"]
 
 [tool.poetry.scripts]
 cv-download = 'cv_py.resources.datapackage:download_cli'
@@ -45,7 +46,6 @@ pytest = ">=4.6"
 black = "^19.10b0"
 taskipy = "^1.2.1"
 poetry-dynamic-versioning = "^0.6.0"
-coconut = "^1.4.3"
 
 [tool.taskipy.tasks]
 format = "black cv_py/"

@@ -40,9 +40,32 @@ def get_filename(datapackage="cord19_cdcs"):
             f"https://github.com/{repo}/releases/download/v{v}/cord19-cdcs-{v}.tar.gz"
         )
         return fname
+    elif datapackage in [  # Sci-spaCy
+        "en_core_sci_sm",
+        "en_core_sci_md",
+        "en_core_sci_lg",
+        "en_ner_craft_md",
+        "en_ner_jnlpba_md",
+        "en_ner_bc5cdr_md",
+        "en_ner_bionlp13cg_md",
+    ]:
+        fname = (
+            f"https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.2.4/{datapackage}-0.2.4.tar.gz"
+        )
+        return fname
+
     else:  # TODO other resources sources?
         raise NotImplementedError
 
+
+def download_datapackage(datapackage, user_pip_args=None):
+    download_url = get_filename(datapackage=datapackage)
+    print(download_url)
+    pip_args = ["--no-cache-dir", "--upgrade"]
+    if user_pip_args:
+        pip_args.extend(user_pip_args)
+    cmd = [sys.executable, "-m", "pip", "install"] + pip_args + [download_url]
+    return subprocess.call(cmd, env=os.environ.copy())
 
 def is_package(name):
     """Check if string maps to a package installed via pip.
@@ -68,15 +91,6 @@ def get_package_path(name):
     pkg = importlib.import_module(name)
     return Path(pkg.__file__).parent
 
-
-def download_datapackage(datapackage, user_pip_args=None):
-    download_url = get_filename(datapackage=datapackage)
-    print(download_url)
-    pip_args = ["--no-cache-dir", "--upgrade"]
-    if user_pip_args:
-        pip_args.extend(user_pip_args)
-    cmd = [sys.executable, "-m", "pip", "install"] + pip_args + [download_url]
-    return subprocess.call(cmd, env=os.environ.copy())
 
 
 def download_cli():
@@ -108,6 +122,7 @@ def download_cli():
     ), "Package already installed! To reinstall, pass `--overwrite`."
 
     download_datapackage(args.resource, user_pip_args=args.pip_arg)
+
 
 
 def load(datapackage="cord19_cdcs", fmt="parquet"):
