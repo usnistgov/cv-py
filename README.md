@@ -19,7 +19,7 @@ cord19tasks()[-2].question
 >>> 'What do we know about COVID-19 risk factors?'
 ```
 #### Public API helper-functions
-Make use of powerful state-of-the-art Neural question answering, to search for relevant CORD19 passages with a single query to Korea University's [*covidAsk*]() model:
+Make use of powerful state-of-the-art Neural question answering, to search for relevant CORD19 passages with a single query to Korea University's [*covidAsk*](https://covidask.korea.ac.kr/) model:
 ```python
 from cv_py.tools.remote import covid_ask
 ans = covid_ask(cord19tasks()[-2].question)
