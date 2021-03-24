@@ -1,4 +1,4 @@
-name: cv-py
+name: cord19
 
 dependencies:
   - numpy

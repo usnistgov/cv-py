@@ -8,9 +8,9 @@ jupyter:
       format_version: '1.2'
       jupytext_version: 1.5.0
   kernelspec:
-    display_name: Python [conda env:cord19dev]
+    display_name: Python [conda env:cv-py]
     language: python
-    name: conda-env-cord19dev-py
+    name: conda-env-cv-py-py
 ---
 
 <!-- #region slideshow={"slide_type": "slide"} -->
