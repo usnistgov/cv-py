@@ -18,6 +18,32 @@ import semantic_version as sv
 __all__ = ["load"]
 
 
+def check_version():
+    return False
+
+
+def check_datapackage(datapackage):
+    """check whether the zipped data package already exists"""
+    path = f"{datapackage}-{__scispacy_version__}.tar.gz.dvc"
+    is_file = os.path.isfile(path)
+    if is_file and check_version() == __scispacy_version__:
+        print("File is already up-to-date!")
+        exit(0)
+    elif is_file:
+        return "update"
+    else:
+        return "import-url"
+
+def check_dvc():
+    """check whether or not dvc has been initiated in the current working directory (whether the .dvc config folder exists, more precisely)"""
+    path = './.dvc'
+    isdir = os.path.isdir(path)
+    return isdir
+
+def init_dvc():
+    cmd = ["dvc", "init"]
+    return subprocess.call(cmd, env=os.environ.copy())
+
 def get_release_versions(proj_str):
     r = requests.get(f"https://api.github.com/repos/{proj_str}/tags").json()
     versions = [sv.Version(i["name"][1:]) for i in r if sv.validate(i["name"][1:])]
@@ -45,17 +71,18 @@ def get_filename(datapackage="cord19_cdcs"):
         )
         return fname
 
-    else:  # TODO other resources sources?
-        raise NotImplementedError
+    # TODO other resources sources?
 
 
-def download_datapackage(datapackage, user_pip_args=None):
+
+def download_datapackage(datapackage):
     download_url = get_filename(datapackage=datapackage)
     print(download_url)
-    pip_args = ["--no-cache-dir", "--upgrade"]
-    if user_pip_args:
-        pip_args.extend(user_pip_args)
-    cmd = [sys.executable, "-m", "pip", "install"] + pip_args + [download_url]
+    if not check_dvc():
+        init_dvc()
+
+    dvc_command = check_datapackage()
+    cmd = ["dvc", dvc_command, datapackage]
     return subprocess.call(cmd, env=os.environ.copy())
 
 def is_package(name):
@@ -92,12 +119,7 @@ def download_cli():
     parser.add_argument(
         "--resource", "-r", type=str, help="Which resource to install?",
     )
-    parser.add_argument(
-        "--pip-arg",
-        "-p",
-        action="append",
-        help="Argument to pass to pip (in addition to `--no-cache-dir`)",
-    )
+
     parser.add_argument(
         "--overwrite",
         dest="overwrite",
