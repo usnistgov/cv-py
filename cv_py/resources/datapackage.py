@@ -5,7 +5,7 @@ import requests
 import os
 import subprocess
 import sys
-from cv_py import __compatible__
+from cv_py import __compatible__, __scispacy_version__
 import argparse
 import re
 from pathlib import Path
@@ -14,7 +14,6 @@ import pkg_resources
 import dask.dataframe as dd
 import requests
 import semantic_version as sv
-
 
 __all__ = ["load"]
 
@@ -40,17 +39,9 @@ def get_filename(datapackage="cord19_cdcs"):
             f"https://github.com/{repo}/releases/download/v{v}/cord19-cdcs-{v}.tar.gz"
         )
         return fname
-    elif datapackage in [  # Sci-spaCy
-        "en_core_sci_sm",
-        "en_core_sci_md",
-        "en_core_sci_lg",
-        "en_ner_craft_md",
-        "en_ner_jnlpba_md",
-        "en_ner_bc5cdr_md",
-        "en_ner_bionlp13cg_md",
-    ]:
+    else:
         fname = (
-            f"https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.2.4/{datapackage}-0.2.4.tar.gz"
+            f"https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v{__scispacy_version__}/{datapackage}-{__scispacy_version__}.tar.gz"
         )
         return fname
 
