@@ -7,6 +7,7 @@ import subprocess
 import sys
 from cv_py import __compatible__, __scispacy_version__
 import argparse
+import dvc
 import re
 from pathlib import Path
 import importlib
@@ -14,11 +15,19 @@ import pkg_resources
 import dask.dataframe as dd
 import requests
 import semantic_version as sv
+import yaml
 
 __all__ = ["load"]
 
 
-def check_version():
+def check_version(dvc_file):
+    with open(dvc_file, 'r') as yaml_dvc:
+        try:
+            dvc_dict = yaml.safe_load(yaml_dvc)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    #TODO make regex to check the release version and compare it to the scispacy version on hand.
     return False
 
 
@@ -26,10 +35,11 @@ def check_datapackage(datapackage):
     """check whether the zipped data package already exists"""
     path = f"{datapackage}-{__scispacy_version__}.tar.gz.dvc"
     is_file = os.path.isfile(path)
-    if is_file and check_version() == __scispacy_version__:
+    version_is_correct = check_version(path)
+    if is_file and version_is_correct == __scispacy_version__:
         print("File is already up-to-date!")
         exit(0)
-    elif is_file:
+    elif is_file and not version_is_correct:
         return "update"
     else:
         return "import-url"
