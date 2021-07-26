@@ -5,18 +5,58 @@ import requests
 import os
 import subprocess
 import sys
-from cv_py import __compatible__
+from cv_py import __compatible__, __scispacy_version__
 import argparse
-import re
 from pathlib import Path
 import importlib
 import pkg_resources
 import dask.dataframe as dd
 import requests
 import semantic_version as sv
-
+import yaml
+import re
 
 __all__ = ["load"]
+
+
+def check_version(dvc_file):
+    with open(dvc_file, 'r') as yaml_dvc:
+        try:
+            dvc_dict = yaml.safe_load(yaml_dvc)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    source_url = dvc_dict["deps"][0]["path"]
+    version_regex = re.compile(r'[0-9]+\.[0-9]+\.[0-9]+')
+    match = version_regex.search(source_url)
+
+    return match.group() == __scispacy_version__
+
+
+def check_datapackage(datapackage):
+    """check whether the zipped data package already exists"""
+    path = f"{datapackage}-{__scispacy_version__}.tar.gz.dvc"
+    is_file = os.path.isfile(path)
+    version_is_correct = check_version(path)
+    if is_file and version_is_correct == __scispacy_version__:
+        print("File is already up-to-date!")
+        exit(0)
+    elif is_file and not version_is_correct:
+        return "update"
+    else:
+        return "import-url"
+
+
+def check_dvc():
+    """check whether or not dvc has been initiated in the current working directory (whether the .dvc config folder exists, more precisely)"""
+    path = './.dvc'
+    isdir = os.path.isdir(path)
+    return isdir
+
+
+def init_dvc():
+    cmd = ["dvc", "init"]
+    return subprocess.call(cmd, env=os.environ.copy())
 
 
 def get_release_versions(proj_str):
@@ -40,32 +80,25 @@ def get_filename(datapackage="cord19_cdcs"):
             f"https://github.com/{repo}/releases/download/v{v}/cord19-cdcs-{v}.tar.gz"
         )
         return fname
-    elif datapackage in [  # Sci-spaCy
-        "en_core_sci_sm",
-        "en_core_sci_md",
-        "en_core_sci_lg",
-        "en_ner_craft_md",
-        "en_ner_jnlpba_md",
-        "en_ner_bc5cdr_md",
-        "en_ner_bionlp13cg_md",
-    ]:
+    else:
         fname = (
-            f"https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.2.4/{datapackage}-0.2.4.tar.gz"
+            f"https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v{__scispacy_version__}/{datapackage}-{__scispacy_version__}.tar.gz"
         )
         return fname
 
-    else:  # TODO other resources sources?
-        raise NotImplementedError
+    # TODO other resources sources?
 
 
-def download_datapackage(datapackage, user_pip_args=None):
+def download_datapackage(datapackage):
     download_url = get_filename(datapackage=datapackage)
     print(download_url)
-    pip_args = ["--no-cache-dir", "--upgrade"]
-    if user_pip_args:
-        pip_args.extend(user_pip_args)
-    cmd = [sys.executable, "-m", "pip", "install"] + pip_args + [download_url]
+    if not check_dvc():
+        init_dvc()
+
+    dvc_command = check_datapackage()
+    cmd = ["dvc", dvc_command, datapackage]
     return subprocess.call(cmd, env=os.environ.copy())
+
 
 def is_package(name):
     """Check if string maps to a package installed via pip.
@@ -92,7 +125,6 @@ def get_package_path(name):
     return Path(pkg.__file__).parent
 
 
-
 def download_cli():
 
     parser = argparse.ArgumentParser(
@@ -101,12 +133,7 @@ def download_cli():
     parser.add_argument(
         "--resource", "-r", type=str, help="Which resource to install?",
     )
-    parser.add_argument(
-        "--pip-arg",
-        "-p",
-        action="append",
-        help="Argument to pass to pip (in addition to `--no-cache-dir`)",
-    )
+
     parser.add_argument(
         "--overwrite",
         dest="overwrite",
@@ -122,7 +149,6 @@ def download_cli():
     ), "Package already installed! To reinstall, pass `--overwrite`."
 
     download_datapackage(args.resource, user_pip_args=args.pip_arg)
-
 
 
 def load(datapackage="cord19_cdcs", fmt="parquet"):
