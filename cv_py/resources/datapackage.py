@@ -7,8 +7,6 @@ import subprocess
 import sys
 from cv_py import __compatible__, __scispacy_version__
 import argparse
-import dvc
-import re
 from pathlib import Path
 import importlib
 import pkg_resources
@@ -16,6 +14,7 @@ import dask.dataframe as dd
 import requests
 import semantic_version as sv
 import yaml
+import re
 
 __all__ = ["load"]
 
@@ -27,8 +26,11 @@ def check_version(dvc_file):
         except yaml.YAMLError as exc:
             print(exc)
 
-    #TODO make regex to check the release version and compare it to the scispacy version on hand.
-    return False
+    source_url = dvc_dict["deps"][0]["path"]
+    version_regex = re.compile(r'[0-9]+\.[0-9]+\.[0-9]+')
+    match = version_regex.search(source_url)
+
+    return match.group() == __scispacy_version__
 
 
 def check_datapackage(datapackage):
@@ -44,15 +46,18 @@ def check_datapackage(datapackage):
     else:
         return "import-url"
 
+
 def check_dvc():
     """check whether or not dvc has been initiated in the current working directory (whether the .dvc config folder exists, more precisely)"""
     path = './.dvc'
     isdir = os.path.isdir(path)
     return isdir
 
+
 def init_dvc():
     cmd = ["dvc", "init"]
     return subprocess.call(cmd, env=os.environ.copy())
+
 
 def get_release_versions(proj_str):
     r = requests.get(f"https://api.github.com/repos/{proj_str}/tags").json()
@@ -84,7 +89,6 @@ def get_filename(datapackage="cord19_cdcs"):
     # TODO other resources sources?
 
 
-
 def download_datapackage(datapackage):
     download_url = get_filename(datapackage=datapackage)
     print(download_url)
@@ -94,6 +98,7 @@ def download_datapackage(datapackage):
     dvc_command = check_datapackage()
     cmd = ["dvc", dvc_command, datapackage]
     return subprocess.call(cmd, env=os.environ.copy())
+
 
 def is_package(name):
     """Check if string maps to a package installed via pip.
@@ -120,7 +125,6 @@ def get_package_path(name):
     return Path(pkg.__file__).parent
 
 
-
 def download_cli():
 
     parser = argparse.ArgumentParser(
@@ -145,7 +149,6 @@ def download_cli():
     ), "Package already installed! To reinstall, pass `--overwrite`."
 
     download_datapackage(args.resource, user_pip_args=args.pip_arg)
-
 
 
 def load(datapackage="cord19_cdcs", fmt="parquet"):
