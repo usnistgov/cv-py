@@ -205,7 +205,7 @@ Interest in this? Experience in what has/hasn't worked? -> Let me know!
 <!-- #region slideshow={"slide_type": "slide"} -->
 ## Thank you
 
-**Thurston Sexton**
+**Rachael Sexton**
 
 tbs4@nist.gov
 <!-- #endregion -->
