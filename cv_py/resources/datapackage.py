@@ -1,4 +1,4 @@
-__authors__ = ["Thurston"]
+__authors__ = ["Rachael"]
 """Modified from SpaCy in places"""
 
 import requests
